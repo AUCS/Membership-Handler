@@ -11,7 +11,7 @@ using System.Web.Http;
 
 namespace MembershipHandler.Controllers
 {
-    public class EmailConfirmController : ApiController
+    public class SlackInvite : ApiController
     {
         [HttpGet]
         public HttpResponseMessage Get(string guid)
@@ -48,8 +48,15 @@ namespace MembershipHandler.Controllers
                 TableOperation tableOperation = TableOperation.Replace(member);
                 table.Execute(tableOperation);
             }
-            
+
+            SendSlackInvitation(results[0]);
+
             return Request.CreateResponse(HttpStatusCode.OK, member.Email + " has been confirmed.");
+        }
+
+        private void SendSlackInvitation(Member member)
+        {
+            // using slack api
         }
     }
 }
