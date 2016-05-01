@@ -79,7 +79,21 @@ namespace MembershipHandler.Controllers
             // options are:
             //      confirm email and send slack invite,
             //      confirm email without slack invite
-            //      do nothing and will be removed after 48 hours+ (needs to be implemented)
+            //      do nothing and will be removed after 48 hours+
+            // Create the email object first, then add the properties.
+            SendGridMessage myMessage = new SendGridMessage();
+            myMessage.AddTo(member.Email);
+            myMessage.From = new MailAddress("membership@aucs.club", "Adelaide Uni Cheese Society");
+            myMessage.Subject = "Welcome to the AUCS!";
+            myMessage.Text = "Hello World!";
+            myMessage.Html = "<p>Hello World!</p>"
+            // these should both point to a separate file with contents i think
+
+            // Create a Web transport, using API Key
+            var transportWeb = new Web("This string is a SendGrid API key");
+
+            // Send the email.
+            transportWeb.DeliverAsync(myMessage);
         }
 
         [NonAction]
