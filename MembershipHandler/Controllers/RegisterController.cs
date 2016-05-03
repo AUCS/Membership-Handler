@@ -46,11 +46,11 @@ namespace MembershipHandler.Controllers
             List<Member> results = table.ExecuteQuery(query).ToList();
             if (results.Count > 0)
             {
-                SendEmail(results[0]);
                 if (results[0].EmailConfirmed)
                 {
                     return Request.CreateResponse(HttpStatusCode.Conflict, "Already a member");
                 }
+                SendEmail(results[0]);
                 return Request.CreateResponse(HttpStatusCode.OK, "We've sent you another email. Please check your junk folder.");
             }
 
