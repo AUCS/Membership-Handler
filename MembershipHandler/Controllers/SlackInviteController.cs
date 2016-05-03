@@ -12,7 +12,7 @@ using System.Web.Http;
 
 namespace MembershipHandler.Controllers
 {
-    public class SlackInvite : ApiController
+    public class SlackInviteController : ApiController
     {
         [HttpGet]
         public HttpResponseMessage Get(string id)
@@ -65,7 +65,7 @@ namespace MembershipHandler.Controllers
             {
                 int nameSpace = member.Name.IndexOf(' ');
                 string firstName = member.Name.Substring(0, nameSpace);
-                string lastName = member.Name.Substring(nameSpace, member.Name.Length);
+                string lastName = member.Name.Substring(nameSpace + 1, member.Name.Length - nameSpace - 1);
                 if (firstName != null && firstName != string.Empty)
                 {
                     request.AddParameter("first_name", firstName);                

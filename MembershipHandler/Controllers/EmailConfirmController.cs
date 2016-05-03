@@ -49,7 +49,7 @@ namespace MembershipHandler.Controllers
             }
             if (results[0].EmailConfirmed)
             {
-                return HttpStatusCode.BadRequest;
+                return HttpStatusCode.OK;
             }
 
             Member member = results[0];

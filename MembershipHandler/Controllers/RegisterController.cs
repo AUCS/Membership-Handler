@@ -175,22 +175,28 @@ namespace MembershipHandler.Controllers
 
             List<Member> results = table.ExecuteQuery(rangeQuery).ToList();
             // Create the batch operation.
-            TableBatchOperation batchOperation = new TableBatchOperation();
-            for (int i = 0; i < results.Count; i++)
+            if (results != null)
             {
-                if (!results[i].EmailConfirmed)
+                TableBatchOperation batchOperation = new TableBatchOperation();
+                for (int i = 0; i < results.Count; i++)
                 {
-                    batchOperation.Delete(results[i]);
+                    if (!results[i].EmailConfirmed)
+                    {
+                        batchOperation.Delete(results[i]);
+                    }
+                    else if (!results[i].StudentConfirmed)
+                    {
+                        results[i].StudentId = null;
+                        results[i].ConfirmStudentId = null;
+                        batchOperation.Replace(results[i]);
+                    }
                 }
-                else if (!results[i].StudentConfirmed)
+                // Execute the batch operation.
+                if (batchOperation.Count > 0)
                 {
-                    results[i].StudentId = null;
-                    results[i].ConfirmStudentId = null;
-                    batchOperation.Replace(results[i]);
+                    table.ExecuteBatch(batchOperation);
                 }
             }
-            // Execute the batch operation.
-            table.ExecuteBatch(batchOperation);
         }
     }
 }
