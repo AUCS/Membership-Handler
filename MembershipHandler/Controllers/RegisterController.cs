@@ -57,20 +57,32 @@ namespace MembershipHandler.Controllers
             Member newMember = new Member();
             newMember.Email = form.Email;
             newMember.Name = form.Name;
-            newMember.EmailId = Guid.NewGuid().ToString();
+            newMember.ConfirmEmailId = Guid.NewGuid().ToString();
             newMember.RegistrationDate = DateTime.UtcNow;
             if (form.StudentId != null)
             {
-                newMember.IsAdelaideUniStudent = true;
-                newMember.AdelaideUniStudentId = form.StudentId;
+                query = new TableQuery<Member>().Where(
+                    TableQuery.CombineFilters(
+                        TableQuery.GenerateFilterCondition("StudentConfirmed", QueryComparisons.Equal, true.ToString()),
+                        TableOperators.And,
+                        TableQuery.GenerateFilterCondition("StudentId", QueryComparisons.Equal, form.StudentId))
+                    );
+                results = table.ExecuteQuery(query).ToList();
+                if (results.Count > 0)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Conflict, "That Student Id already has an email associated with it.");
+                }
+                newMember.StudentId = form.StudentId;
+                newMember.ConfirmStudentId = Guid.NewGuid().ToString();
+                SendStudentEmail(newMember);
             }
             else
             {
-                // Construct the query operation for all customer entities where PartitionKey="Smith".
+                newMember.StudentConfirmed = false;
                 query = new TableQuery<Member>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.GreaterThanOrEqual, "2016"));
                 results = table.ExecuteQuery(query).ToList();
-                int students = results.Where(q => q.IsAdelaideUniStudent).Count();
-                int nonStudents = results.Where(q => !q.IsAdelaideUniStudent).Count();
+                int students = results.Where(q => q.StudentConfirmed).Count();
+                int nonStudents = results.Where(q => !q.StudentConfirmed).Count();
                 if (nonStudents >= students)
                 {
                     return Request.CreateResponse(HttpStatusCode.Conflict, "Unfortunately we are not taking any new members that are not Adelaide Uni Students at this time.");
@@ -100,8 +112,34 @@ namespace MembershipHandler.Controllers
             myMessage.From = new MailAddress("membership@aucs.club", "Adelaide Uni Cheese Society");
             myMessage.Subject = "Welcome to the AUCS!";
             myMessage.Text = Emails.RegisterEmail.Text;
-            myMessage.Text.Replace("<name>", member.Name);
-            myMessage.Text.Replace("<emailid>", member.EmailId);
+            myMessage.Text = myMessage.Text.Replace("<name>", member.Name);
+            myMessage.Text = myMessage.Text.Replace("<emailid>", member.ConfirmEmailId);
+
+            // Create a Web transport, using API Key
+            // Retrieve the storage account from the connection string.
+            var transportWeb = new Web(CloudConfigurationManager.GetSetting("SendGridAPIKey"));
+
+            // Send the email.
+            transportWeb.DeliverAsync(myMessage);
+        }
+
+        [NonAction]
+        private void SendStudentEmail(Member member)
+        {
+            if (member.Email == member.StudentId + "@student.adelaide.edu.au"
+                || member.Email == member.StudentId + "@adelaide.edu.au")
+            {
+                // Email is uni email don't send a second confirmation
+                return;
+            }
+            SendGridMessage myMessage = new SendGridMessage();
+            myMessage.AddTo(member.StudentId + "@student.adelaide.edu.au");
+            myMessage.AddTo(member.StudentId + "@adelaide.edu.au");
+            myMessage.From = new MailAddress("membership@aucs.club", "Adelaide Uni Cheese Society");
+            myMessage.Subject = "Welcome to the AUCS!";
+            myMessage.Text = Emails.ConfirmStudentEmail.Text;
+            myMessage.Text = myMessage.Text.Replace("<name>", member.Name);
+            myMessage.Text = myMessage.Text.Replace("<studentid>", member.ConfirmStudentId);
 
             // Create a Web transport, using API Key
             // Retrieve the storage account from the connection string.
@@ -127,16 +165,29 @@ namespace MembershipHandler.Controllers
             DateTime hours48 = DateTime.UtcNow.AddHours(-48); 
             TableQuery<Member> rangeQuery = new TableQuery<Member>().Where(
                 TableQuery.CombineFilters(
-                    TableQuery.GenerateFilterCondition("EmailConfirmed", QueryComparisons.Equal, false.ToString()),
-                    TableOperators.And,
-                    TableQuery.GenerateFilterCondition("RegistrationDate", QueryComparisons.LessThan, hours48.ToString())));
+                    TableQuery.GenerateFilterCondition("RegistrationDate", QueryComparisons.LessThan, hours48.ToString()),
+                    TableOperators.And, TableQuery.CombineFilters(
+                        TableQuery.GenerateFilterCondition("EmailConfirmed", QueryComparisons.Equal, false.ToString()),
+                        TableOperators.Or,
+                        TableQuery.GenerateFilterCondition("StudentConfirmed", QueryComparisons.Equal, false.ToString())
+                    )
+                ));
 
             List<Member> results = table.ExecuteQuery(rangeQuery).ToList();
             // Create the batch operation.
             TableBatchOperation batchOperation = new TableBatchOperation();
             for (int i = 0; i < results.Count; i++)
             {
-                batchOperation.Delete(results[i]);
+                if (!results[i].EmailConfirmed)
+                {
+                    batchOperation.Delete(results[i]);
+                }
+                else if (!results[i].StudentConfirmed)
+                {
+                    results[i].StudentId = null;
+                    results[i].ConfirmStudentId = null;
+                    batchOperation.Replace(results[i]);
+                }
             }
             // Execute the batch operation.
             table.ExecuteBatch(batchOperation);

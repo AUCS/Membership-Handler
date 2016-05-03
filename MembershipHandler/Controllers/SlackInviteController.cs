@@ -19,7 +19,20 @@ namespace MembershipHandler.Controllers
         {
             RegisterController.RemoveOldUnconfirmedAccounts();
 
+            HttpStatusCode resultEmail = EmailConfirmController.ConfirmEmail(guid);
 
+            if (resultEmail == HttpStatusCode.OK)
+            {
+                string resultSlack = SendSlackInvitation(guid);
+
+                return Request.CreateResponse(HttpStatusCode.OK, resultSlack);
+            }
+            return Request.CreateResponse(HttpStatusCode.BadRequest, " ");
+        }
+
+        [NonAction]
+        private string SendSlackInvitation(string guid)
+        {
             // Retrieve the storage account from the connection string.
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
                 CloudConfigurationManager.GetSetting("StorageConnectionString"));
@@ -35,28 +48,11 @@ namespace MembershipHandler.Controllers
             List<Member> results = table.ExecuteQuery(emailExistsQuery).ToList();
             if (results.Count < 1)
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, " ");
-            }
-            if (results[0].EmailConfirmed)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, " ");
+                return "Unsolvable error";
             }
 
             Member member = results[0];
-            if (!member.EmailConfirmed)
-            {
-                member.EmailConfirmed = true;
-                TableOperation tableOperation = TableOperation.Replace(member);
-                table.Execute(tableOperation);
-            }
 
-            string result = SendSlackInvitation(results[0]);
-
-            return Request.CreateResponse(HttpStatusCode.OK, result);
-        }
-
-        private string SendSlackInvitation(Member member)
-        {
             // using slack api (undocumented method documented here: https://github.com/ErikKalkoken/slackApiDoc)
             var client = new RestClient("https://slack.com/api/");
             // client.Authenticator = new HttpBasicAuthenticator(username, password);

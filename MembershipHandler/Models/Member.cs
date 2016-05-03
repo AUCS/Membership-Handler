@@ -16,16 +16,19 @@ namespace MembershipHandler.Models
 
         public bool EmailConfirmed { get; set; }
 
+        public bool StudentConfirmed { get; set; }
+
         public string Email { get; set; }
+
+        public string StudentId { get; set; }
 
         public string Name { get; set; }
 
         public DateTime RegistrationDate { get; set; }
+
         
-        public bool IsAdelaideUniStudent { get; set; }
+        public string ConfirmStudentId { get; set; }
 
-        public string AdelaideUniStudentId { get; set; }
-
-        public string EmailId { get; set; }
+        public string ConfirmEmailId { get; set; }
     }
 }

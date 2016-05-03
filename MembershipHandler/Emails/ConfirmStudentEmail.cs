@@ -5,7 +5,7 @@ using System.Web;
 
 namespace MembershipHandler.Emails
 {
-    public class RegisterEmail
+    public class ConfirmStudentEmail
     {
         public const string Text =
             @"
@@ -22,11 +22,7 @@ The AUCS is a modern club which was designed to be easy to be a part of even wit
 
 
 
-To finalise your membership please click on one of the following:
-
-To confirm your email address and join us on slack: http://aucsmembershiphandler.azurewebsites.net/api/SlackInvite/<emailid>
-
-To confirm your email address only: http://aucsmembershiphandler.azurewebsites.net/api/EmailConfirm/<emailid>
+To confirm that you are a student of Adelaide University please click on the following link: http://aucsmembershiphandler.azurewebsites.net/api/AdelaideStudentConfirm/<studentid>
 
 
 
