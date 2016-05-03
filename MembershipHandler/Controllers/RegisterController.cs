@@ -41,9 +41,9 @@ namespace MembershipHandler.Controllers
             // Create the table if it doesn't exist.
             table.CreateIfNotExists();
             // Create the table query.
-            TableQuery<Member> emailExistsQuery = new TableQuery<Member>().Where(
+            TableQuery<Member> query = new TableQuery<Member>().Where(
                     TableQuery.GenerateFilterCondition("Email", QueryComparisons.Equal, form.Email));
-            List<Member> results = table.ExecuteQuery(emailExistsQuery).ToList();
+            List<Member> results = table.ExecuteQuery(query).ToList();
             if (results.Count > 0)
             {
                 SendEmail(results[0]);
@@ -51,7 +51,7 @@ namespace MembershipHandler.Controllers
                 {
                     return Request.CreateResponse(HttpStatusCode.Conflict, "Already a member");
                 }
-                return Request.CreateResponse(HttpStatusCode.OK, "We've sent you another email.");
+                return Request.CreateResponse(HttpStatusCode.OK, "We've sent you another email. Please check your junk folder.");
             }
 
             Member newMember = new Member();
@@ -64,12 +64,24 @@ namespace MembershipHandler.Controllers
                 newMember.IsAdelaideUniStudent = true;
                 newMember.AdelaideUniStudentId = form.StudentId;
             }
+            else
+            {
+                // Construct the query operation for all customer entities where PartitionKey="Smith".
+                query = new TableQuery<Member>().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.GreaterThanOrEqual, "2016"));
+                results = table.ExecuteQuery(query).ToList();
+                int students = results.Where(q => q.IsAdelaideUniStudent).Count();
+                int nonStudents = results.Where(q => !q.IsAdelaideUniStudent).Count();
+                if (nonStudents >= students)
+                {
+                    return Request.CreateResponse(HttpStatusCode.Conflict, "Unfortunately we are not taking any new members that are not Adelaide Uni Students at this time.");
+                }
+            }
             // Create the TableOperation object that inserts the customer entity.
             TableOperation tableOperation = TableOperation.Insert(newMember);
             // Execute the insert operation.
             table.Execute(tableOperation);
             SendEmail(newMember);
-            return Request.CreateResponse(HttpStatusCode.OK, "Thanks " + newMember.Name + ".\nWe've sent you an email to confirm your email address.");
+            return Request.CreateResponse(HttpStatusCode.OK, "Thanks " + newMember.Name + ". We've sent you an email to confirm your email address.");
         }
 
         [NonAction]
@@ -87,9 +99,9 @@ namespace MembershipHandler.Controllers
             myMessage.AddTo(member.Email);
             myMessage.From = new MailAddress("membership@aucs.club", "Adelaide Uni Cheese Society");
             myMessage.Subject = "Welcome to the AUCS!";
-            myMessage.Text = "Hello World!";
-            myMessage.Html = "<p>Hello World!</p>";
-            // these should both point to a separate file with contents i think
+            myMessage.Text = Emails.RegisterEmail.Text;
+            myMessage.Text.Replace("<name>", member.Name);
+            myMessage.Text.Replace("<emailid>", member.EmailId);
 
             // Create a Web transport, using API Key
             // Retrieve the storage account from the connection string.

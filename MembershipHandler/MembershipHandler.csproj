@@ -166,6 +166,7 @@
     <Compile Include="Controllers\SlackInviteController.cs" />
     <Compile Include="Controllers\EmailConfirmController.cs" />
     <Compile Include="Controllers\RegisterController.cs" />
+    <Compile Include="Emails\RegisterEmail.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
