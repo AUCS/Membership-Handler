@@ -2,11 +2,13 @@
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
+using SendGrid;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Mail;
 using System.Web.Http;
 
 namespace MembershipHandler.Controllers
@@ -86,11 +88,12 @@ namespace MembershipHandler.Controllers
             myMessage.From = new MailAddress("membership@aucs.club", "Adelaide Uni Cheese Society");
             myMessage.Subject = "Welcome to the AUCS!";
             myMessage.Text = "Hello World!";
-            myMessage.Html = "<p>Hello World!</p>"
+            myMessage.Html = "<p>Hello World!</p>";
             // these should both point to a separate file with contents i think
 
             // Create a Web transport, using API Key
-            var transportWeb = new Web("This string is a SendGrid API key");
+            // Retrieve the storage account from the connection string.
+            var transportWeb = new Web(CloudConfigurationManager.GetSetting("SendGridAPIKey"));
 
             // Send the email.
             transportWeb.DeliverAsync(myMessage);

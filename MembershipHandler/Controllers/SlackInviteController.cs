@@ -2,6 +2,7 @@
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,26 +50,26 @@ namespace MembershipHandler.Controllers
                 table.Execute(tableOperation);
             }
 
-            SendSlackInvitation(results[0]);
+            string result = SendSlackInvitation(results[0]);
 
-            return Request.CreateResponse(HttpStatusCode.OK, member.Email + " has been confirmed.");
+            return Request.CreateResponse(HttpStatusCode.OK, result);
         }
 
-        private void SendSlackInvitation(Member member)
+        private string SendSlackInvitation(Member member)
         {
             // using slack api (undocumented method documented here: https://github.com/ErikKalkoken/slackApiDoc)
             var client = new RestClient("https://slack.com/api/");
             // client.Authenticator = new HttpBasicAuthenticator(username, password);
 
             var request = new RestRequest("user.admin.invite", Method.POST);
-            request.AddParameter("token", "value"); // Authentication token (Requires scope: ??)
+            request.AddParameter("token", CloudConfigurationManager.GetSetting("SlackAuthenticationToken")); // Authentication token (Requires scope: ??)
             request.AddParameter("email", member.Email);
             
             if (member.Name.Contains(' '))
             {
                 int nameSpace = member.Name.IndexOf(' ');
                 string firstName = member.Name.Substring(0, nameSpace);
-                string lastName = member.Name.Substring(nameSpace, member.Name.Length)
+                string lastName = member.Name.Substring(nameSpace, member.Name.Length);
                 if (firstName != null && firstName != string.Empty)
                 {
                     request.AddParameter("first_name", firstName);                
@@ -81,12 +82,7 @@ namespace MembershipHandler.Controllers
 
             // execute the request
             IRestResponse response = client.Execute(request);
-            var content = response.Content; // raw content as string
-
-            // or automatically deserialize result
-            // return content type is sniffed but can be explicitly set via RestClient.AddHandler();
-            RestResponse<Person> response2 = client.Execute<Person>(request);
-            var name = response2.Data.Name;
+            return response.Content; // raw content as string
         }
     }
 }
