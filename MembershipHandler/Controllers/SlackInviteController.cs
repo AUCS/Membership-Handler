@@ -54,10 +54,10 @@ namespace MembershipHandler.Controllers
             Member member = results[0];
 
             // using slack api (undocumented method documented here: https://github.com/ErikKalkoken/slackApiDoc)
-            var client = new RestClient("https://slack.com/api/");
+            var client = new RestClient("https://aucs.slack.com/api/");
             // client.Authenticator = new HttpBasicAuthenticator(username, password);
 
-            var request = new RestRequest("user.admin.invite", Method.POST);
+            var request = new RestRequest("users.admin.invite", Method.GET);
             request.AddParameter("token", CloudConfigurationManager.GetSetting("SlackAuthenticationToken")); // Authentication token (Requires scope: ??)
             request.AddParameter("email", member.Email);
             
