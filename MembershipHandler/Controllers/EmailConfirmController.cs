@@ -22,7 +22,7 @@ namespace MembershipHandler.Controllers
             
             if (result == HttpStatusCode.OK)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, "Email has been confirmed.");
+                return Request.CreateResponse(HttpStatusCode.OK, "Thanks, your email address has been confirmed.");
             }
             return Request.CreateResponse(HttpStatusCode.BadRequest, " ");
         }

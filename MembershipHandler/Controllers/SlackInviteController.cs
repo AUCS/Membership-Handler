@@ -23,9 +23,23 @@ namespace MembershipHandler.Controllers
 
             if (resultEmail == HttpStatusCode.OK)
             {
+                string result = "Thanks, your email address has been confirmed";
                 string resultSlack = SendSlackInvitation(id);
 
-                return Request.CreateResponse(HttpStatusCode.OK, resultSlack);
+                if (resultSlack.Contains("already_in_team"))
+                {
+                    result += ", but you are already in the slack team.";
+                }
+                else if (!resultSlack.Contains("error"))
+                {
+                    result += " and a slack invite has been sent to you.";
+                }
+                else
+                {
+                    result += ". Unfortunately there has been a slack error. Please report this to a committee member: " + resultSlack;
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, result);
             }
             return Request.CreateResponse(HttpStatusCode.BadRequest, " ");
         }
