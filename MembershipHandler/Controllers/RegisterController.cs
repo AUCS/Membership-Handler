@@ -24,6 +24,7 @@ namespace MembershipHandler.Controllers
 
         // POST api/member
         [HttpPost]
+        [AllowCrossSiteOrigin]
         public HttpResponseMessage Post(Register form)
         {
             if (!ModelState.IsValid)
