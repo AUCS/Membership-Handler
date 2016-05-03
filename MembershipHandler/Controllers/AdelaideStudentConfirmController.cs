@@ -14,11 +14,11 @@ namespace MembershipHandler.Controllers
     public class AdelaideStudentConfirmController : ApiController
     {
         [HttpGet]
-        public HttpResponseMessage Get(string guid)
+        public HttpResponseMessage Get(string id)
         {
             RegisterController.RemoveOldUnconfirmedAccounts();
 
-            HttpStatusCode result = ConfirmStudent(guid);
+            HttpStatusCode result = ConfirmStudent(id);
 
             if (result == HttpStatusCode.OK)
             {

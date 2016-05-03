@@ -14,11 +14,11 @@ namespace MembershipHandler.Controllers
     public class EmailConfirmController : ApiController
     {
         [HttpGet]
-        public HttpResponseMessage Get(string guid)
+        public HttpResponseMessage Get(string id)
         {
             RegisterController.RemoveOldUnconfirmedAccounts();
 
-            HttpStatusCode result = ConfirmEmail(guid);
+            HttpStatusCode result = ConfirmEmail(id);
             
             if (result == HttpStatusCode.OK)
             {

@@ -15,15 +15,15 @@ namespace MembershipHandler.Controllers
     public class SlackInvite : ApiController
     {
         [HttpGet]
-        public HttpResponseMessage Get(string guid)
+        public HttpResponseMessage Get(string id)
         {
             RegisterController.RemoveOldUnconfirmedAccounts();
 
-            HttpStatusCode resultEmail = EmailConfirmController.ConfirmEmail(guid);
+            HttpStatusCode resultEmail = EmailConfirmController.ConfirmEmail(id);
 
             if (resultEmail == HttpStatusCode.OK)
             {
-                string resultSlack = SendSlackInvitation(guid);
+                string resultSlack = SendSlackInvitation(id);
 
                 return Request.CreateResponse(HttpStatusCode.OK, resultSlack);
             }
