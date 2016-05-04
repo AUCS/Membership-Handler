@@ -15,6 +15,7 @@ namespace MembershipHandler.Controllers
     public class SlackInviteController : ApiController
     {
         [HttpGet]
+        [AllowCrossSiteOrigin]
         public HttpResponseMessage Get(string id)
         {
             RegisterController.RemoveOldUnconfirmedAccounts();

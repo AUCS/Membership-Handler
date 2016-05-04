@@ -14,6 +14,7 @@ namespace MembershipHandler.Controllers
     public class AdelaideStudentConfirmController : ApiController
     {
         [HttpGet]
+        [AllowCrossSiteOrigin]
         public HttpResponseMessage Get(string id)
         {
             RegisterController.RemoveOldUnconfirmedAccounts();

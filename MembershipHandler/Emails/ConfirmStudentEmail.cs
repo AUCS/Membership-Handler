@@ -22,7 +22,7 @@ The AUCS is a modern club which was designed to be easy to be a part of even wit
 
 
 
-To confirm that you are a student of Adelaide University please click on the following link: http://aucsmembershiphandler.azurewebsites.net/api/AdelaideStudentConfirm/<studentid>
+To confirm that you are a student of Adelaide University please click on the following link: http://aucs.club/link.html?type=AdelaideStudentConfirm&id=<emailid>
 
 
 
