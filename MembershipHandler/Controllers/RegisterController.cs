@@ -45,10 +45,26 @@ namespace MembershipHandler.Controllers
             TableQuery<Member> query = new TableQuery<Member>().Where(
                     TableQuery.GenerateFilterCondition("Email", QueryComparisons.Equal, form.Email.ToLowerInvariant()));
             List<Member> results = table.ExecuteQuery(query).ToList();
+            TableOperation tableOperation;
             if (results.Count > 0)
             {
                 if (results[0].EmailConfirmed)
                 {
+                    if (!results[0].StudentConfirmed && form.StudentId != null)
+                    {
+                        if (!CheckGoodStudentId(form.StudentId))
+                        {
+                            return Request.CreateResponse(HttpStatusCode.Conflict, "That Student Id already has an email associated with it.");
+                        }
+                        results[0].StudentId = form.StudentId.ToLowerInvariant();
+                        results[0].ConfirmStudentId = Guid.NewGuid().ToString();
+                        // Create the TableOperation object that inserts the customer entity.
+                        tableOperation = TableOperation.Replace(results[0]);
+                        // Execute the insert operation.
+                        table.Execute(tableOperation);
+                        SendStudentEmail(results[0]);
+                        return Request.CreateResponse(HttpStatusCode.OK, "Thanks " + results[0].Name + ". We've sent you an email to confirm your Student Id.");
+                    }
                     return Request.CreateResponse(HttpStatusCode.Conflict, "Already a member");
                 }
                 SendEmail(results[0]);
@@ -62,14 +78,7 @@ namespace MembershipHandler.Controllers
             newMember.RegistrationDate = DateTime.UtcNow;
             if (form.StudentId != null)
             {
-                query = new TableQuery<Member>().Where(
-                    TableQuery.CombineFilters(
-                        TableQuery.GenerateFilterConditionForBool("StudentConfirmed", QueryComparisons.Equal, true),
-                        TableOperators.And,
-                        TableQuery.GenerateFilterCondition("StudentId", QueryComparisons.Equal, form.StudentId.ToLowerInvariant()))
-                    );
-                results = table.ExecuteQuery(query).ToList();
-                if (results.Count > 0)
+                if (!CheckGoodStudentId(form.StudentId))
                 {
                     return Request.CreateResponse(HttpStatusCode.Conflict, "That Student Id already has an email associated with it.");
                 }
@@ -90,11 +99,38 @@ namespace MembershipHandler.Controllers
                 }
             }
             // Create the TableOperation object that inserts the customer entity.
-            TableOperation tableOperation = TableOperation.Insert(newMember);
+            tableOperation = TableOperation.Insert(newMember);
             // Execute the insert operation.
             table.Execute(tableOperation);
             SendEmail(newMember);
             return Request.CreateResponse(HttpStatusCode.OK, "Thanks " + newMember.Name + ". We've sent you an email to confirm your email address.");
+        }
+
+        [NonAction]
+        private bool CheckGoodStudentId(string id)
+        {
+            // Retrieve the storage account from the connection string.
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
+                CloudConfigurationManager.GetSetting("StorageConnectionString"));
+            // Create the table client.
+            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
+            // Retrieve a reference to the table.
+            CloudTable table = tableClient.GetTableReference("Members");
+            // Create the table if it doesn't exist.
+            table.CreateIfNotExists();
+
+            TableQuery<Member> query = new TableQuery<Member>().Where(
+                    TableQuery.CombineFilters(
+                        TableQuery.GenerateFilterConditionForBool("StudentConfirmed", QueryComparisons.Equal, true),
+                        TableOperators.And,
+                        TableQuery.GenerateFilterCondition("StudentId", QueryComparisons.Equal, id.ToLowerInvariant()))
+                    );
+            List<Member> results = table.ExecuteQuery(query).ToList();
+            if (results.Count > 0)
+            {
+                return false;
+            }
+            return true;
         }
 
         [NonAction]
