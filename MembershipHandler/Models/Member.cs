@@ -26,7 +26,9 @@ namespace MembershipHandler.Models
 
         public DateTime RegistrationDate { get; set; }
 
-        
+        public string SlackId { get; set; }
+
+
 
         public string ConfirmStudentId { get; set; }
 

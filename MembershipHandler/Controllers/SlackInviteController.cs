@@ -1,4 +1,5 @@
-﻿using MembershipHandler.Models;
+﻿using MembershipHandler.Filters;
+using MembershipHandler.Models;
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
@@ -12,61 +13,33 @@ using System.Web.Http;
 
 namespace MembershipHandler.Controllers
 {
-    public class SlackInviteController : ApiController
+    public class SlackInviteController : BaseController
     {
         [HttpGet]
         [AllowCrossSiteOrigin]
+        [Obsolete]
         public HttpResponseMessage Get(string id)
         {
-            RegisterController.RemoveOldUnconfirmedAccounts();
-
-            HttpStatusCode resultEmail = EmailConfirmController.ConfirmEmail(id);
-
-            if (resultEmail == HttpStatusCode.OK)
+            if (id.Length != Guid.NewGuid().ToString().Length)
             {
-                string result = "Thanks, your email address has been confirmed";
-                string resultSlack = SendSlackInvitation(id);
-
-                if (resultSlack.Contains("already_in_team"))
-                {
-                    result += ", but you are already in the slack team.";
-                }
-                else if (!resultSlack.Contains("error"))
-                {
-                    result += " and a slack invite has been sent to you.";
-                }
-                else
-                {
-                    result += ". Unfortunately there has been a slack error. Please report this to a committee member: " + resultSlack;
-                }
-
-                return Request.CreateResponse(HttpStatusCode.OK, result);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, " ");
             }
-            return Request.CreateResponse(HttpStatusCode.BadRequest, " ");
-        }
 
-        [NonAction]
-        private string SendSlackInvitation(string guid)
-        {
-            // Retrieve the storage account from the connection string.
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(
-                CloudConfigurationManager.GetSetting("StorageConnectionString"));
-            // Create the table client.
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
-            // Retrieve a reference to the table.
             CloudTable table = tableClient.GetTableReference("Members");
-            // Create the table if it doesn't exist.
             table.CreateIfNotExists();
-            // Create the table query.
-            TableQuery<Member> emailExistsQuery = new TableQuery<Member>().Where(
-                    TableQuery.GenerateFilterCondition("ConfirmEmailId", QueryComparisons.Equal, guid));
-            List<Member> results = table.ExecuteQuery(emailExistsQuery).ToList();
-            if (results.Count < 1)
+            
+            TableQuery<Member> matchingAccount = new TableQuery<Member>().Where(
+                    TableQuery.GenerateFilterCondition("ConfirmEmailId", QueryComparisons.Equal, id));
+            Member member = table.ExecuteQuery(matchingAccount).FirstOrDefault();
+            if (member == null)
             {
-                return "Unsolvable error";
+                return Request.CreateResponse(HttpStatusCode.BadRequest, " ");
             }
 
-            Member member = results[0];
+            member.EmailConfirmed = true;
+            member.ConfirmEmailId = string.Empty;
+            TableOperation tableOperation = TableOperation.Replace(member);
+            table.Execute(tableOperation);
 
             // using slack api (undocumented method documented here: https://github.com/ErikKalkoken/slackApiDoc)
             var client = new RestClient("https://aucs.slack.com/api/");
@@ -75,25 +48,55 @@ namespace MembershipHandler.Controllers
             var request = new RestRequest("users.admin.invite", Method.GET);
             request.AddParameter("token", CloudConfigurationManager.GetSetting("SlackAuthenticationToken")); // Authentication token (Requires scope: ??)
             request.AddParameter("email", member.Email);
-            
-            if (member.Name.Contains(' '))
+
+            Tuple<string, string> brokenName = BreakName(member.Name);
+            request.AddParameter("first_name", brokenName.Item1);
+            if (brokenName.Item2 != string.Empty)
             {
-                int nameSpace = member.Name.IndexOf(' ');
-                string firstName = member.Name.Substring(0, nameSpace);
-                string lastName = member.Name.Substring(nameSpace + 1, member.Name.Length - nameSpace - 1);
-                if (firstName != null && firstName != string.Empty)
-                {
-                    request.AddParameter("first_name", firstName);                
-                }
-                if (lastName != null && lastName != string.Empty)
-                {
-                    request.AddParameter("last_name", lastName);                
-                }   
+                request.AddParameter("last_name", brokenName.Item2);
             }
 
             // execute the request
             IRestResponse response = client.Execute(request);
-            return response.Content; // raw content as string
+
+            if (response.Content.Contains("already_in_team"))
+            {
+                return Request.CreateResponse(HttpStatusCode.OK,
+                    "Thanks, your email address has been confirmed, and you are already in the slack team.");
+            }
+            else if (!response.Content.Contains("error"))
+            {
+                return Request.CreateResponse(HttpStatusCode.OK,
+                    "Thanks, your email address has been confirmed. Unfortunately there has been an error with slackr. Please report this to a committee member: " + response.Content);
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.OK,
+                    "Thanks, your email address has been confirmed and a slack invite has been sent to you.");
+            }            
+        }
+
+        [NonAction]
+        private Tuple<string, string> BreakName(string fullName)
+        {
+            if (!fullName.Contains(' '))
+            {
+                return new Tuple<string, string>(fullName, string.Empty);
+            }
+            
+            int nameSpace = fullName.IndexOf(' ');
+            string firstName = fullName.Substring(0, nameSpace);
+            string lastName = fullName.Substring(nameSpace + 1, fullName.Length - nameSpace - 1);
+
+            if ((firstName != null && firstName != string.Empty)
+                && (lastName != null && lastName != string.Empty))
+            {
+                return new Tuple<string, string>(firstName, lastName);
+            }
+            else
+            {
+                return new Tuple<string, string>(fullName, string.Empty);
+            }
         }
     }
 }

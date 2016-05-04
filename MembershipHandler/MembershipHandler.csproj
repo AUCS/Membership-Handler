@@ -162,14 +162,15 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Filters\AllowCrossSiteOriginAttribute.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\AdelaideStudentConfirmController.cs" />
+    <Compile Include="Controllers\StudentConfirmController.cs" />
     <Compile Include="Controllers\SlackInviteController.cs" />
     <Compile Include="Controllers\EmailConfirmController.cs" />
     <Compile Include="Controllers\RegisterController.cs" />
-    <Compile Include="Emails\ConfirmStudentEmail.cs" />
-    <Compile Include="Emails\RegisterEmail.cs" />
+    <Compile Include="Emails\ConfirmStudent.cs" />
+    <Compile Include="Emails\ConfirmEmail.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

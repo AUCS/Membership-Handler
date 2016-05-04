@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Web.Http.Filters;
 
-public class AllowCrossSiteOriginAttribute : ActionFilterAttribute
+namespace MembershipHandler.Filters
 {
-    public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
+    public class AllowCrossSiteOriginAttribute : ActionFilterAttribute
     {
-        if (actionExecutedContext.Response != null)
-            actionExecutedContext.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+        public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
+        {
+            if (actionExecutedContext.Response != null)
+                actionExecutedContext.Response.Headers.Add("Access-Control-Allow-Origin", "*");
 
-        base.OnActionExecuted(actionExecutedContext);
+            base.OnActionExecuted(actionExecutedContext);
+        }
     }
 }
