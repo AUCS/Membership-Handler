@@ -55,8 +55,8 @@ namespace MembershipHandler.Controllers
             Member member = results[0];
             if (!member.EmailConfirmed)
             {
-                if (member.Email == member.StudentId + "@student.adelaide.edu.au"
-                    || member.Email == member.StudentId + "@adelaide.edu.au")
+                if (member.Email == member.StudentId.ToLowerInvariant() + "@student.adelaide.edu.au"
+                    || member.Email == member.StudentId.ToLowerInvariant() + "@adelaide.edu.au")
                 {
                     // Email is uni email confirm student automatically
                     member.StudentConfirmed = true;

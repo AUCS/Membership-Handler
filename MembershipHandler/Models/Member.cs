@@ -27,6 +27,7 @@ namespace MembershipHandler.Models
         public DateTime RegistrationDate { get; set; }
 
         
+
         public string ConfirmStudentId { get; set; }
 
         public string ConfirmEmailId { get; set; }

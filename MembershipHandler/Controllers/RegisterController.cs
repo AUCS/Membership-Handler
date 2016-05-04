@@ -43,7 +43,7 @@ namespace MembershipHandler.Controllers
             table.CreateIfNotExists();
             // Create the table query.
             TableQuery<Member> query = new TableQuery<Member>().Where(
-                    TableQuery.GenerateFilterCondition("Email", QueryComparisons.Equal, form.Email));
+                    TableQuery.GenerateFilterCondition("Email", QueryComparisons.Equal, form.Email.ToLowerInvariant()));
             List<Member> results = table.ExecuteQuery(query).ToList();
             if (results.Count > 0)
             {
@@ -56,7 +56,7 @@ namespace MembershipHandler.Controllers
             }
 
             Member newMember = new Member();
-            newMember.Email = form.Email;
+            newMember.Email = form.Email.ToLowerInvariant();
             newMember.Name = form.Name;
             newMember.ConfirmEmailId = Guid.NewGuid().ToString();
             newMember.RegistrationDate = DateTime.UtcNow;
@@ -64,16 +64,16 @@ namespace MembershipHandler.Controllers
             {
                 query = new TableQuery<Member>().Where(
                     TableQuery.CombineFilters(
-                        TableQuery.GenerateFilterCondition("StudentConfirmed", QueryComparisons.Equal, true.ToString()),
+                        TableQuery.GenerateFilterConditionForBool("StudentConfirmed", QueryComparisons.Equal, true),
                         TableOperators.And,
-                        TableQuery.GenerateFilterCondition("StudentId", QueryComparisons.Equal, form.StudentId))
+                        TableQuery.GenerateFilterCondition("StudentId", QueryComparisons.Equal, form.StudentId.ToLowerInvariant()))
                     );
                 results = table.ExecuteQuery(query).ToList();
                 if (results.Count > 0)
                 {
                     return Request.CreateResponse(HttpStatusCode.Conflict, "That Student Id already has an email associated with it.");
                 }
-                newMember.StudentId = form.StudentId;
+                newMember.StudentId = form.StudentId.ToLowerInvariant();
                 newMember.ConfirmStudentId = Guid.NewGuid().ToString();
                 SendStudentEmail(newMember);
             }
@@ -163,14 +163,14 @@ namespace MembershipHandler.Controllers
             // Create the table if it doesn't exist.
             table.CreateIfNotExists();
             // Create the table query.
-            DateTime hours48 = DateTime.UtcNow.AddHours(-48); 
+            DateTimeOffset hours48 = DateTime.UtcNow.AddHours(-48); 
             TableQuery<Member> rangeQuery = new TableQuery<Member>().Where(
                 TableQuery.CombineFilters(
-                    TableQuery.GenerateFilterCondition("RegistrationDate", QueryComparisons.LessThan, hours48.ToString()),
+                    TableQuery.GenerateFilterConditionForDate("RegistrationDate", QueryComparisons.LessThan, hours48),
                     TableOperators.And, TableQuery.CombineFilters(
-                        TableQuery.GenerateFilterCondition("EmailConfirmed", QueryComparisons.Equal, false.ToString()),
+                        TableQuery.GenerateFilterConditionForBool("EmailConfirmed", QueryComparisons.Equal, false),
                         TableOperators.Or,
-                        TableQuery.GenerateFilterCondition("StudentConfirmed", QueryComparisons.Equal, false.ToString())
+                        TableQuery.GenerateFilterConditionForBool("StudentConfirmed", QueryComparisons.Equal, false)
                     )
                 ));
 
