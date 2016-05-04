@@ -148,6 +148,7 @@ namespace MembershipHandler.Controllers
             myMessage.Text = Emails.ConfirmStudent.Text;
             myMessage.Text = myMessage.Text.Replace("<name>", member.Name);
             myMessage.Text = myMessage.Text.Replace("<studentid>", member.StudentId);
+            myMessage.Text = myMessage.Text.Replace("<email>", member.Email);
             myMessage.Text = myMessage.Text.Replace("<linkid>", member.ConfirmStudentId);
 
             // Create a Web transport, using API Key
