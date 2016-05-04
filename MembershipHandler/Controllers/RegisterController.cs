@@ -83,12 +83,14 @@ namespace MembershipHandler.Controllers
             table.Execute(tableOperation);
             
             SendEmailConfirm(newMember);
+            string note = "Thanks, " + newMember.Name + "! We've sent you an email with more information and the next steps you need to take.";
             if (newMember.StudentId != null)
             {
                 SendStudentConfirm(newMember);
+                note = "Thanks, " + newMember.Name + "! We've sent you two emails, one with more information and the next steps you need to take, and another to your Student Id to confirm that it's yours.";
             }
 
-            return Request.CreateResponse(HttpStatusCode.OK, "Thanks " + results[0].Name + ". We've sent you an email to confirm your Student Id.");
+            return Request.CreateResponse(HttpStatusCode.OK, note);
         }
 
         [NonAction]
