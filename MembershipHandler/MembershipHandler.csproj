@@ -163,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\StudentChangeController.cs" />
     <Compile Include="Filters\AllowCrossSiteOriginAttribute.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\StudentConfirmController.cs" />
@@ -177,6 +178,7 @@
     </Compile>
     <Compile Include="Models\Member.cs" />
     <Compile Include="Models\Register.cs" />
+    <Compile Include="Models\SlackSlash.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

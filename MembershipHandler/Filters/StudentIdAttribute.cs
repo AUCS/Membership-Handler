@@ -18,7 +18,7 @@ namespace MembershipHandler.Filters
             return false;
         }
 
-        private static bool IsStudentId(string studentId)
+        public static bool IsStudentId(string studentId)
         {
             if (studentId.StartsWith("a", StringComparison.InvariantCultureIgnoreCase))
             {
