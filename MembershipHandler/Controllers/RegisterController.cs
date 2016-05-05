@@ -29,7 +29,7 @@ namespace MembershipHandler.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid parameters.");
+                return Request.CreateResponse(HttpStatusCode.Conflict, "Invalid parameters.");
             }
             
             CloudTable table = tableClient.GetTableReference("Members");
@@ -71,17 +71,27 @@ namespace MembershipHandler.Controllers
                     "That email address is already in use.");
             }
 
-            Member newMember = new Member();
-            newMember.Email = form.Email;
+            Member newMember;
+            if (results.Any(q => q.Email == form.Email))
+            {   // Email already in but unconfirmed, assume change of name or student id
+                newMember = results.First(q => q.Email == form.Email);
+            }
+            else
+            {   // New Email and therefore new user
+                newMember = new Member();
+                newMember.Email = form.Email;
+            }
             newMember.Name = form.Name;
             newMember.ConfirmEmailId = Guid.NewGuid().ToString();
             newMember.RegistrationDate = DateTime.UtcNow;
+
             if (form.StudentId != null)
             {
                 newMember.StudentId = form.StudentId;
                 newMember.ConfirmStudentId = Guid.NewGuid().ToString();
             }
-            TableOperation tableOperation = TableOperation.Insert(newMember);
+
+            TableOperation tableOperation = TableOperation.InsertOrReplace(newMember);
             table.Execute(tableOperation);
             
             SendEmailConfirm(newMember);
