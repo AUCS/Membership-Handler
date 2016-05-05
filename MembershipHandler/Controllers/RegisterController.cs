@@ -98,11 +98,11 @@ namespace MembershipHandler.Controllers
             TableOperation tableOperation = TableOperation.InsertOrReplace(newMember);
             table.Execute(tableOperation);
             
-            SendEmailConfirm(newMember);
+            Emails.EmailHandler.SendEmailConfirm(newMember);
             string note = "Thanks, " + newMember.Name + "! We've sent you an email with more information and the next steps you need to take.";
             if (newMember.StudentId != null)
             {
-                SendStudentConfirm(newMember);
+                Emails.EmailHandler.SendStudentConfirm(newMember);
                 note = "Thanks, " + newMember.Name + "! We've sent you two emails, one with more information and the next steps you need to take, and another to your Student Id to confirm that it's yours.";
             }
 

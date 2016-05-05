@@ -50,40 +50,5 @@ namespace MembershipHandler.Controllers
             }
             return false;
         }
-        
-        [NonAction]
-        protected void SendEmailConfirm(Member member)
-        {
-            SendGridMessage myMessage = new SendGridMessage();
-
-            myMessage.AddTo(member.Email);
-            myMessage.From = new MailAddress("membership@aucs.club", "Adelaide Uni Cheese Society");
-            myMessage.Subject = "Welcome to the AUCS!";
-            myMessage.Text = Emails.ConfirmEmail.Text;
-            myMessage.Text = myMessage.Text.Replace("<name>", member.Name);
-            myMessage.Text = myMessage.Text.Replace("<emailid>", member.ConfirmEmailId);
-            
-            var transportWeb = new Web(CloudConfigurationManager.GetSetting("SendGridAPIKey"));
-            transportWeb.DeliverAsync(myMessage);
-        }
-
-        [NonAction]
-        protected void SendStudentConfirm(Member member)
-        {
-            SendGridMessage myMessage = new SendGridMessage();
-
-            myMessage.AddTo(member.StudentId + "@student.adelaide.edu.au");
-            myMessage.From = new MailAddress("membership@aucs.club", "Adelaide Uni Cheese Society");
-            myMessage.Subject = "Confirm your Student Id";
-            myMessage.Text = Emails.ConfirmStudent.Text;
-            myMessage.Text = myMessage.Text.Replace("<name>", member.Name);
-            myMessage.Text = myMessage.Text.Replace("<studentid>", member.StudentId);
-            myMessage.Text = myMessage.Text.Replace("<email>", member.Email);
-            myMessage.Text = myMessage.Text.Replace("<linkid>", member.ConfirmStudentId);
-            
-            var transportWeb = new Web(CloudConfigurationManager.GetSetting("SendGridAPIKey"));
-            transportWeb.DeliverAsync(myMessage);
-        }
-
     }
 }
