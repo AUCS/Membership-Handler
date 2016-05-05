@@ -11,10 +11,17 @@ namespace MembershipHandler.Filters
     {
         public override bool IsValid(object value)
         {
+            if (value == null)
+            {
+                // Because you dont need to have a student id
+                return true;
+            }
             if (value.GetType() == typeof(string))
             {
+                // If its anything it has to be a valid id
                 return IsStudentId((string)value);
             }
+            // Otherwise false
             return false;
         }
 
