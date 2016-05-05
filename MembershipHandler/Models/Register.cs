@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MembershipHandler.Filters;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,9 +11,10 @@ namespace MembershipHandler.Models
     {
         [Required]
         public string Name { get; set; }
+        [Required]
         [EmailAddress]
         public string Email { get; set; }
-
+        [StudentId]
         public string StudentId { get; set; }
     }
 }

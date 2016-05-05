@@ -171,6 +171,7 @@
     <Compile Include="Controllers\RegisterController.cs" />
     <Compile Include="Emails\ConfirmStudent.cs" />
     <Compile Include="Emails\ConfirmEmail.cs" />
+    <Compile Include="Filters\StudentIdAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
