@@ -32,7 +32,7 @@ namespace MembershipHandler.Controllers
             Member member = table.ExecuteQuery(matchingAccount).FirstOrDefault();
             if (member == null)
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, " ");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid code. This might have happened if you filled out the registration form more than once. Please use the link in the latest email you recieve.");
             }
 
             member.EmailConfirmed = true;
