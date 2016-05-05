@@ -63,7 +63,7 @@ namespace MembershipHandler.Controllers
                 return Request.CreateResponse(HttpStatusCode.OK,
                     "Thanks, your email address has been confirmed, and you are already in the slack team.");
             }
-            else if (!response.Content.Contains("error"))
+            else if (response.Content.Contains("error"))
             {
                 return Request.CreateResponse(HttpStatusCode.OK,
                     "Thanks, your email address has been confirmed. Unfortunately there has been an error with slackr. Please report this to a committee member: " + response.Content);
