@@ -36,9 +36,11 @@ namespace MembershipHandler.Controllers
             table.CreateIfNotExists();
             TableQuery<Member> clashQuery;
 
+            form.Name = form.Name.Trim();
             form.Email = form.Email.ToLowerInvariant();
             if (form.StudentId != null)
             {
+                form.StudentId = form.StudentId.Trim();
                 form.StudentId = form.StudentId.ToLowerInvariant();
                 clashQuery = new TableQuery<Member>().Where(
                     TableQuery.CombineFilters(
@@ -99,7 +101,9 @@ namespace MembershipHandler.Controllers
             CloudTable table = tableClient.GetTableReference("Members");
             table.CreateIfNotExists();
 
-            TableQuery<Member> query = new TableQuery<Member>().Select(new List<string> { "StudentConfirmed" });
+            TableQuery<Member> query = new TableQuery<Member>()
+                .Where(TableQuery.GenerateFilterConditionForBool("EmailConfirmed", QueryComparisons.Equal, true))
+                .Select(new List<string> { "StudentConfirmed" });
             List<bool> results = table.ExecuteQuery(query).Select(q => q.StudentConfirmed).ToList();
 
             int students = results.Count(q => q);
