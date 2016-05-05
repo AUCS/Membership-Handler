@@ -29,7 +29,11 @@ namespace MembershipHandler.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return Request.CreateResponse(HttpStatusCode.Conflict, "Invalid parameters.");
+                if (ModelState.Keys.Contains("form.StudentId"))
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid Student Id.");
+                }
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid parameters.");
             }
             
             CloudTable table = tableClient.GetTableReference("Members");

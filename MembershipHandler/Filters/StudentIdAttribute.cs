@@ -9,9 +9,17 @@ namespace MembershipHandler.Filters
 {
     public class StudentIdAttribute : ValidationAttribute
     {
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        public override bool IsValid(object value)
         {
-            string studentId = ((Member)validationContext.ObjectInstance).StudentId;
+            if (value.GetType() == typeof(string))
+            {
+                return IsStudentId((string)value);
+            }
+            return false;
+        }
+
+        private static bool IsStudentId(string studentId)
+        {
             if (studentId.StartsWith("a", StringComparison.InvariantCultureIgnoreCase))
             {
                 if (studentId.Length == "a1234567".Length)
@@ -20,11 +28,11 @@ namespace MembershipHandler.Filters
                     int x;
                     if (int.TryParse(number, out x))
                     {
-                        return ValidationResult.Success;
+                        return true;
                     }
                 }
             }
-            return new ValidationResult("Invalid Student Id");
+            return false;
         }
     }
 }
