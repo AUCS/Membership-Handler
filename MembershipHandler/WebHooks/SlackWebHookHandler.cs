@@ -10,6 +10,7 @@ using MembershipHandler.Filters;
 using System.Net;
 using Microsoft.WindowsAzure.Storage.Table;
 using MembershipHandler.Models;
+using RestSharp;
 
 namespace MembershipHandler.WebHooks
 {
@@ -24,8 +25,8 @@ namespace MembershipHandler.WebHooks
         {
             NameValueCollection command = context.GetDataOrDefault<NameValueCollection>();
             string slackId = command["user_id"];
-
-            KeyValuePair<string, string> slashCommand = SlackCommand.ParseActionWithValue(command["text"]);
+            
+            KeyValuePair <string, string> slashCommand = SlackCommand.ParseActionWithValue(command["text"]);
             if (slashCommand.Key == null || slashCommand.Key == string.Empty)
             {
                 // No commands given, send help
@@ -46,6 +47,8 @@ namespace MembershipHandler.WebHooks
                     return Task.FromResult(SendHowTo(context, slashCommand.Key));
             }
         }
+
+        
 
         private bool ShowMembershipDetails(WebHookHandlerContext context, string slackId)
         {
