@@ -13,11 +13,25 @@ namespace MembershipHandler.Models
         {
             PartitionKey = DateTime.Now.Year.ToString();
             RowKey = Guid.NewGuid().ToString();
+
+            EmailConfirmed = false;
+            StudentConfirmed = false;
+            IsCommittee = false;
+        }
+
+        public string AUCSID
+        {
+            get
+            {
+                return RowKey;
+            }
         }
 
         public bool EmailConfirmed { get; set; }
 
         public bool StudentConfirmed { get; set; }
+
+        public bool IsCommittee { get; set; }
 
         public string Email { get; set; }
         
@@ -28,6 +42,7 @@ namespace MembershipHandler.Models
         public DateTime RegistrationDate { get; set; }
 
         public string SlackId { get; set; }
+        
 
 
 

@@ -17,27 +17,67 @@ namespace MembershipHandler.WebHooks
     {
         public SlackWebHookHandler()
         {
-            Receiver = SlackWebHookReceiver.ReceiverName;
+            Receiver = "Slack";
         }
 
         public override Task ExecuteAsync(string receiver, WebHookHandlerContext context)
         {
             NameValueCollection command = context.GetDataOrDefault<NameValueCollection>();
+            string slackId = command["user_id"];
 
-            switch(context.Id)
+            KeyValuePair<string, string> slashCommand = SlackCommand.ParseActionWithValue(command["text"]);
+            if (slashCommand.Key == null || slashCommand.Key == string.Empty)
             {
-                case "updateid":
-                    return Task.FromResult(UpdateStudentId(context, command));
-                case "other":
-                    break;
+                // No commands given, send help
+                return Task.FromResult(SendHowTo(context, null));
             }
 
-            return Task.FromResult(false);
+            switch (slashCommand.Key)
+            {
+                case "view":
+                    return Task.FromResult(ShowMembershipDetails(context, slackId));
+                case "studentid":
+                    return Task.FromResult(UpdateStudentId(context, slackId, slashCommand.Value));
+                case "premium":
+                    return Task.FromResult(UpdatePremium(context, slackId));
+                case "committee":
+                    // Todo: make people who want to be committee members register themselves here maybe?
+                default:
+                    return Task.FromResult(SendHowTo(context, slashCommand.Key));
+            }
         }
 
-        private bool UpdateStudentId(WebHookHandlerContext context, NameValueCollection command)
+        private bool ShowMembershipDetails(WebHookHandlerContext context, string slackId)
         {
-            string newStudentId = command["text"];
+            Member member = GetMember(slackId);
+            if (member == null)
+            {
+                context.Response = context.Request.CreateResponse(
+                    new SlackSlashResponse("A bad error occured with the slack webhook, code: 1. Please contact a Committee Member about this."));
+                return true;
+            }
+
+            SlackSlashResponse slashReply = new SlackSlashResponse("Your AUCS Membership Details:");
+            SlackAttachment att = new SlackAttachment(member.Name, member.Name);
+            att.Fields.Add(new SlackField("Email", member.Email));
+
+            if (member.IsCommittee)
+            {
+                att.Title = GetCommitteeTitle(member.AUCSID);
+            }
+            if (member.StudentConfirmed)
+            {
+                att.Fields.Add(new SlackField("Student Id", member.StudentId));
+            }
+            
+            slashReply.Attachments.Add(att);
+            context.Response = context.Request.CreateResponse(slashReply);
+            return true;
+        }
+
+        private bool UpdateStudentId(WebHookHandlerContext context, string slackId, string studentId)
+        {
+            string newStudentId = studentId;
             if (!StudentIdAttribute.IsStudentId(newStudentId))
             {
                 context.Response = context.Request.CreateResponse(
@@ -45,15 +85,14 @@ namespace MembershipHandler.WebHooks
                 return true;
             }
 
-            CloudTable table = tableClient.GetTableReference("Members");
-            table.CreateIfNotExists();
-            TableQuery<Member> results = new TableQuery<Member>().Where(
-                    TableQuery.GenerateFilterCondition("SlackId", QueryComparisons.Equal, command["user_id"]));
-            Member member = table.ExecuteQuery(results).FirstOrDefault();
+            Member member = GetMember(slackId);
             if (member == null)
             {
-                return false;
+                context.Response = context.Request.CreateResponse(
+                    new SlackSlashResponse("A bad error occured with the slack webhook, code: 1. Please contact a Committee Member about this."));
+                return true;
             }
+
 
             if (newStudentId  == null || newStudentId == string.Empty)
             {
@@ -71,17 +110,67 @@ namespace MembershipHandler.WebHooks
                 }
             }
 
-
             member.StudentConfirmed = false;
             member.StudentId = newStudentId;
 
             TableOperation tableOperation = TableOperation.Replace(member);
-            table.Execute(tableOperation);
+            tableClient.GetTableReference("Members").Execute(tableOperation);
             Emails.EmailHandler.SendStudentConfirm(member);
 
             context.Response = context.Request.CreateResponse(
                 new SlackSlashResponse("An email has been sent to " + member.StudentId + "@student.adelaide.edu.au to confirm this change."));
             return true;
+        }
+
+        private bool UpdatePremium(WebHookHandlerContext context, string slackId)
+        {
+            SlackSlashResponse slashReply = new SlackSlashResponse("tbd..");
+            context.Response = context.Request.CreateResponse(slashReply);
+            return true;
+        }
+
+        private bool SendHowTo(WebHookHandlerContext context, string failedCommand)
+        {
+            var slashReply = new SlackSlashResponse("View and Update your AUCS Membership Details");
+            var att = new SlackAttachment("Possible Options:", "Possible Options:");
+
+            if (failedCommand != null)
+            {
+                att.Pretext = "'" + failedCommand + "' is not a valid option.";
+            }
+
+            // Slash attachments can contain tabular data as well
+            att.Fields.Add(new SlackField("View Your Membership Details:",
+                "/membership view"));
+            att.Fields.Add(new SlackField("Update your Student Id:",
+                "/membership studentid [new-student-id]"));
+            att.Fields.Add(new SlackField("Update your Premium Status:",
+                "/membership premium"));
+
+            // A reply can contain multiple attachments
+            slashReply.Attachments.Add(att);
+
+            // Return slash command response
+            context.Response = context.Request.CreateResponse(slashReply);
+
+            return true;
+        }
+
+
+
+
+        private Member GetMember(string slackId)
+        {
+            CloudTable table = tableClient.GetTableReference("Members");
+            table.CreateIfNotExists();
+            TableQuery<Member> results = new TableQuery<Member>().Where(
+                    TableQuery.GenerateFilterCondition("SlackId", QueryComparisons.Equal, slackId));
+            Member member = table.ExecuteQuery(results).FirstOrDefault();
+            if (member == null)
+            {
+                return null;
+            }
+            return member;
         }
     }
 }

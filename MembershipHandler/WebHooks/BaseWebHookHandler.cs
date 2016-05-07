@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using Microsoft.Azure;
+using MembershipHandler.Models;
 
 namespace MembershipHandler.WebHooks
 {
@@ -14,7 +15,7 @@ namespace MembershipHandler.WebHooks
     {
         private CloudStorageAccount storageAccount;
         protected CloudTableClient tableClient;
-
+        
         public BaseWebHookHandler()
         {
             // Retrieve the storage account from the connection string.
@@ -22,6 +23,15 @@ namespace MembershipHandler.WebHooks
             // Create the table client.
             tableClient = storageAccount.CreateCloudTableClient();
         }
-        
+
+        protected string GetCommitteeTitle(string aucsId)
+        {
+            CloudTable table = tableClient.GetTableReference("Committee");
+            table.CreateIfNotExists();
+            TableQuery<DynamicTableEntity> results = new TableQuery<DynamicTableEntity>()
+                .Where(TableQuery.GenerateFilterCondition("AUCSID", QueryComparisons.Equal, aucsId))
+                .Select(new string[] { "Title" });
+            return table.ExecuteQuery(results).Select(q => q.Properties["Title"].StringValue).FirstOrDefault();
+        }
     }
 }

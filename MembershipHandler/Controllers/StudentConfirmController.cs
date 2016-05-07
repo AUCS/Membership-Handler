@@ -39,7 +39,7 @@ namespace MembershipHandler.Controllers
             TableOperation tableOperation = TableOperation.Replace(member);
             table.Execute(tableOperation);
 
-            return Request.CreateResponse(HttpStatusCode.OK, "Thanks, your Student ID has been confirmed.");
+            return Request.CreateResponse(HttpStatusCode.OK, "Thanks, your Student Id has been confirmed.");
         }
     }
 }
