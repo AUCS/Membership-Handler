@@ -10,24 +10,21 @@ namespace MembershipHandler.Models
     {
         public Committee()
         {
-            PartitionKey = DateTime.Now.Year.ToString();
-            RowKey = Guid.NewGuid().ToString();
-
+            PartitionKey = "Committee";
+            
+            SuspectedOfNegligence = false;
             VotesMissed = 0;
         }
 
-        public string AUCSID { get; set; }
-
-        public string Title { get; set; }
+        public string MemberId { get; set; }
 
         public DateTime BeginDate { get; set; }
 
         public DateTime EndDate { get; set; }
-
-        public bool GeneralMember { get; set; }
-
+        
         public bool SuspectedOfNegligence { get; set; }
 
         public int VotesMissed { get; set; }
+
     }
 }

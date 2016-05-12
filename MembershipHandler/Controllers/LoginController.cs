@@ -1,5 +1,6 @@
 ﻿using Facebook;
 using MembershipHandler.Filters;
+using MembershipHandler.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,10 @@ using System.Web.Http;
 
 namespace MembershipHandler.Controllers
 {
-    public class LoginController : ApiController
+    public class LoginController : BaseController
     {
+        private const string AUCSGroupId = "1549671362000387";
+
         [HttpGet]
         [AllowCrossSiteOrigin]
         public string Get(string id)
@@ -20,12 +23,28 @@ namespace MembershipHandler.Controllers
                 return "invalid token";
             }
 
-            FacebookClient client = new FacebookClient(id);
-            dynamic me = client.Get("me");
-            string name = me.name;
-            string id = me.id;
+            FacebookClient fbClient = new FacebookClient(id);
+            dynamic fbUser = fbClient.Get("me");
 
-            return me;
+            bool isInGroup = false;
+            dynamic fbGroup = fbClient.Get(AUCSGroupId + "/Members");
+            foreach (dynamic groupMember in fbGroup.data)
+            {
+                if (groupMember.id == fbUser.id)
+                {
+                    isInGroup = true;
+                }
+            }
+
+
+            NewMember user = GetMember(fbUser.id);
+            
+        }
+
+        [NonAction]
+        private  NewMember CreateNewUser()
+        {
+            return null;
         }
     }
 }

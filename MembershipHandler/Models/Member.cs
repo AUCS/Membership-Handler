@@ -12,18 +12,15 @@ namespace MembershipHandler.Models
         public NewMember()
         {
             PartitionKey = "Member";
-            RowKey = Guid.NewGuid().ToString();
         }
 
         public string Name { get; set; }
-        public string FacebookId { get; set; }
 
+        public bool Student { get; set; }
         public bool Newsletter { get; set; }
         public bool Premium { get; set; }
         public bool Lifetime { get; set; }
         public bool Committee { get; set; }
-
-
     }
 
 

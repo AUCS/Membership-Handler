@@ -50,5 +50,16 @@ namespace MembershipHandler.Controllers
             }
             return false;
         }
+
+        [NonAction]
+        protected NewMember GetMember(string id)
+        {
+            CloudTable table = tableClient.GetTableReference("Members");
+            table.CreateIfNotExists();
+
+            TableQuery<NewMember> query = new TableQuery<NewMember>()
+                .Where(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, id));
+            return table.ExecuteQuery(query).FirstOrDefault();
+        }
     }
 }

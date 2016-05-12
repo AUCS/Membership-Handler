@@ -194,8 +194,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Committee.cs" />
+    <Compile Include="Models\Email.cs" />
     <Compile Include="Models\Member.cs" />
     <Compile Include="Models\Register.cs" />
+    <Compile Include="Models\StudentId.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebHooks\BaseWebHookHandler.cs" />
     <Compile Include="WebHooks\SlackWebHookHandler.cs" />
