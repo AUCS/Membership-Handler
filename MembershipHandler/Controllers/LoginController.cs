@@ -1,4 +1,5 @@
 ﻿using Facebook;
+using MembershipHandler.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,14 +12,20 @@ namespace MembershipHandler.Controllers
     public class LoginController : ApiController
     {
         [HttpGet]
-        public string Get(int id)
+        [AllowCrossSiteOrigin]
+        public string Get(string id)
         {
-            var accessToken = "your access token here";
-            var client = new FacebookClient(accessToken);
-            dynamic me = client.Get("me");
-            string aboutMe = me.about;
+            if (id == null || id == string.Empty)
+            {
+                return "invalid token";
+            }
 
-            return aboutMe;
+            FacebookClient client = new FacebookClient(id);
+            dynamic me = client.Get("me");
+            string name = me.name;
+            string id = me.id;
+
+            return me;
         }
     }
 }

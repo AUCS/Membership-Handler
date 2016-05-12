@@ -7,6 +7,28 @@ using System.Web;
 
 namespace MembershipHandler.Models
 {
+    public class NewMember : TableEntity
+    {
+        public NewMember()
+        {
+            PartitionKey = "Member";
+            RowKey = Guid.NewGuid().ToString();
+        }
+
+        public string Name { get; set; }
+        public string FacebookId { get; set; }
+
+        public bool Newsletter { get; set; }
+        public bool Premium { get; set; }
+        public bool Lifetime { get; set; }
+        public bool Committee { get; set; }
+
+
+    }
+
+
+
+
     public class Member : TableEntity
     {
         public Member()
