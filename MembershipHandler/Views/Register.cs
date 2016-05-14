@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
-namespace MembershipHandler.Models
+namespace MembershipHandler.Views
 {
     public class Register
     {

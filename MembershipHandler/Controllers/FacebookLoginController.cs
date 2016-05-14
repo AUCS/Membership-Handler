@@ -24,7 +24,7 @@ namespace MembershipHandler.Controllers
         protected CloudTableClient TableClient;
         protected FacebookClient FBClient;
 
-        protected string AUCSFBId;
+        protected const string AUCSFBId = "1549671362000387";
         protected string UserFBId;
         protected Member CurrentUser;
         
@@ -38,8 +38,6 @@ namespace MembershipHandler.Controllers
             //Setup facebook client
             var serverToken = CloudConfigurationManager.GetSetting("FacebookAUCSAccessToken");
             FBClient = new FacebookClient(serverToken);
-            dynamic group = FBClient.Get("app");
-            AUCSFBId = (string)group.id;
 
             CurrentUser = null;
             if (controllerContext.Request.Headers.Contains("Token"))

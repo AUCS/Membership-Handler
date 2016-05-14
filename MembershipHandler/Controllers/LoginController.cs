@@ -24,6 +24,10 @@ namespace MembershipHandler.Controllers
 
             if (CurrentUser == null)
             {
+                if (!InGroup())
+                {
+                    return "not_in_fb_group";
+                }
                 if (!HalfMembersAreStudents())
                 {
                     CreateNewUser(false);
@@ -47,6 +51,32 @@ namespace MembershipHandler.Controllers
             CloudTable table = TableClient.GetTableReference("Members");
             TableOperation tableOperation = TableOperation.InsertOrReplace(newMember);
             table.Execute(tableOperation);
+        }
+
+        [NonAction]
+        private bool InGroup()
+        {
+            dynamic request = FBClient.Get(AUCSFBId + "/Members");
+            bool paging = true;
+            while (paging)
+            {
+                foreach (dynamic member in request.data)
+                {
+                    if (member.id == UserFBId)
+                    {
+                        return true;
+                    }
+                }
+                if (request.paging != null && request.paging.next != null)
+                {
+                    request = FBClient.Get(request.paging.next);
+                }
+                else
+                {
+                    paging = false;
+                }
+            }
+            return false;
         }
     }
 }

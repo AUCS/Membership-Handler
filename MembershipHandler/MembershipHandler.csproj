@@ -179,6 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\ConfirmController.cs" />
+    <Compile Include="Controllers\CurrentController.cs" />
     <Compile Include="Controllers\FacebookLoginController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Emails\EmailHandler.cs" />
@@ -191,8 +192,9 @@
     </Compile>
     <Compile Include="Models\Committee.cs" />
     <Compile Include="Models\Confirm.cs" />
+    <Compile Include="Views\Current.cs" />
     <Compile Include="Models\Member.cs" />
-    <Compile Include="Models\Register.cs" />
+    <Compile Include="Views\Register.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
