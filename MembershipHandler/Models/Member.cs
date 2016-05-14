@@ -7,66 +7,29 @@ using System.Web;
 
 namespace MembershipHandler.Models
 {
-    public class NewMember : TableEntity
-    {
-        public NewMember()
-        {
-            PartitionKey = "Member";
-        }
-
-        public string Name { get; set; }
-
-        public bool Student { get; set; }
-        public bool Newsletter { get; set; }
-        public bool Premium { get; set; }
-        public bool Lifetime { get; set; }
-        public bool Committee { get; set; }
-    }
-
-
-
-
     public class Member : TableEntity
     {
         public Member()
         {
-            PartitionKey = DateTime.Now.Year.ToString();
-            RowKey = Guid.NewGuid().ToString();
+            PartitionKey = "Member";
 
-            EmailConfirmed = false;
-            StudentConfirmed = false;
-            IsCommittee = false;
+            Name = null;
+            Confirmed = false;
+            Premium = false;
+            Lifetime = false;
+            Committee = false;
+            StudentId = null;
+            EmailAddress = null;
         }
-
-        public string AUCSID
-        {
-            get
-            {
-                return RowKey;
-            }
-        }
-
-        public bool EmailConfirmed { get; set; }
-
-        public bool StudentConfirmed { get; set; }
-
-        public bool IsCommittee { get; set; }
-
-        public string Email { get; set; }
-        
-        public string StudentId { get; set; }
 
         public string Name { get; set; }
-
-        public DateTime RegistrationDate { get; set; }
-
-        public string SlackId { get; set; }
+        public bool Confirmed { get; set; }
         
+        public bool Premium { get; set; }
+        public bool Lifetime { get; set; }
+        public bool Committee { get; set; }
 
-
-
-        public string ConfirmStudentId { get; set; }
-
-        public string ConfirmEmailId { get; set; }
+        public string StudentId { get; set; }
+        public string EmailAddress { get; set; }
     }
 }

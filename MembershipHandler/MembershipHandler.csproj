@@ -178,15 +178,11 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\ConfirmController.cs" />
+    <Compile Include="Controllers\FacebookLoginController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Emails\EmailHandler.cs" />
-    <Compile Include="Filters\AllowCrossSiteOriginAttribute.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\StudentConfirmController.cs" />
-    <Compile Include="Controllers\SlackInviteController.cs" />
-    <Compile Include="Controllers\EmailConfirmController.cs" />
-    <Compile Include="Controllers\RegisterController.cs" />
     <Compile Include="Emails\Templates\ConfirmStudent.cs" />
     <Compile Include="Emails\Templates\ConfirmEmail.cs" />
     <Compile Include="Filters\StudentIdAttribute.cs" />
@@ -194,13 +190,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Committee.cs" />
-    <Compile Include="Models\Email.cs" />
+    <Compile Include="Models\Confirm.cs" />
     <Compile Include="Models\Member.cs" />
     <Compile Include="Models\Register.cs" />
-    <Compile Include="Models\StudentId.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WebHooks\BaseWebHookHandler.cs" />
-    <Compile Include="WebHooks\SlackWebHookHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />

@@ -1,6 +1,8 @@
 ﻿using Facebook;
 using MembershipHandler.Filters;
 using MembershipHandler.Models;
+using Microsoft.Azure;
+using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,41 +12,41 @@ using System.Web.Http;
 
 namespace MembershipHandler.Controllers
 {
-    public class LoginController : BaseController
+    public class LoginController : FacebookLoginController
     {
-        private const string AUCSGroupId = "1549671362000387";
-
-        [HttpGet]
-        [AllowCrossSiteOrigin]
-        public string Get(string id)
+        [HttpPost]
+        public string Post()
         {
-            if (id == null || id == string.Empty)
+            if (UserFBId == null)
             {
-                return "invalid token";
+                return "not_logged_in_facebook";
             }
 
-            FacebookClient fbClient = new FacebookClient(id);
-            dynamic fbUser = fbClient.Get("me");
-
-            bool isInGroup = false;
-            dynamic fbGroup = fbClient.Get(AUCSGroupId + "/Members");
-            foreach (dynamic groupMember in fbGroup.data)
+            if (CurrentUser == null)
             {
-                if (groupMember.id == fbUser.id)
+                if (!HalfMembersAreStudents())
                 {
-                    isInGroup = true;
+                    CreateNewUser(false);
+                    return "not_enough_students";
                 }
+                CreateNewUser(true);
             }
-
-
-            NewMember user = GetMember(fbUser.id);
-            
+            return "current";
         }
 
         [NonAction]
-        private  NewMember CreateNewUser()
+        private  void CreateNewUser(bool confirmed)
         {
-            return null;
+            Member newMember = new Member();
+            newMember.RowKey = UserFBId;
+            newMember.Confirmed = confirmed;
+
+            dynamic fbuser = FBClient.Get(UserFBId);
+            newMember.Name = fbuser.name;
+
+            CloudTable table = TableClient.GetTableReference("Members");
+            TableOperation tableOperation = TableOperation.InsertOrReplace(newMember);
+            table.Execute(tableOperation);
         }
     }
 }

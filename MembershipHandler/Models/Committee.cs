@@ -16,12 +16,8 @@ namespace MembershipHandler.Models
             VotesMissed = 0;
         }
 
-        public string MemberId { get; set; }
-
-        public DateTime BeginDate { get; set; }
-
-        public DateTime EndDate { get; set; }
-        
+        public string Title { get; set; }        
+                
         public bool SuspectedOfNegligence { get; set; }
 
         public int VotesMissed { get; set; }

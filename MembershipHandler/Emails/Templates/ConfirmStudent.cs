@@ -15,7 +15,6 @@ Hi <name>!
 
 
 You indicated that your Student Id is: <studentid>
-The account that you will be linking this Student Id to is: <email>
 
 
 To confirm this please click here: http://aucs.club/link.html?type=StudentConfirm&id=<linkid>
