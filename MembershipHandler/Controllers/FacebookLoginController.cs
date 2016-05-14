@@ -36,8 +36,9 @@ namespace MembershipHandler.Controllers
             TableClient = storageAccount.CreateCloudTableClient();
 
             //Setup facebook client
-            var serverToken = CloudConfigurationManager.GetSetting("FacebookAUCSAccessToken");
-            FBClient = new FacebookClient(serverToken);
+            FBClient = new FacebookClient();
+            FBClient.AppId = "631831156964129";
+            FBClient.AppSecret = CloudConfigurationManager.GetSetting("FacebookAUCSAppSecret");
 
             CurrentUser = null;
             if (controllerContext.Request.Headers.Contains("Token"))
