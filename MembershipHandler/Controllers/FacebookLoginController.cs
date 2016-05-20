@@ -37,8 +37,13 @@ namespace MembershipHandler.Controllers
 
             //Setup facebook client
             FBClient = new FacebookClient();
-            FBClient.AppId = "631831156964129";
-            FBClient.AppSecret = CloudConfigurationManager.GetSetting("FacebookAUCSAppSecret");
+            dynamic accessToken = FBClient.Get("oauth/access_token", new
+            {
+                client_id = "631831156964129",
+                client_secret = CloudConfigurationManager.GetSetting("FacebookAUCSAppSecret"),
+                grant_type = "client_credentials"
+            });
+            FBClient.AccessToken = accessToken.access_token;
 
             CurrentUser = null;
             if (controllerContext.Request.Headers.Contains("Token"))
