@@ -15,6 +15,10 @@ namespace MembershipHandler.Controllers
         [HttpPost]
         public Current Post()
         {
+            if (!CurrentUser.Confirmed)
+            {
+                ConfirmUserIfStudentOrOverHalf();
+            }
             Current response = new Current();
 
             response.Name = CurrentUser.Name;            
@@ -56,6 +60,19 @@ namespace MembershipHandler.Controllers
             }
 
             return response;
+        }
+
+        [NonAction]
+        private void ConfirmUserIfStudentOrOverHalf()
+        {
+            if (CurrentUser.StudentId != null && CurrentUser.StudentId != string.Empty)
+            {
+                CurrentUser.Confirmed = true;
+            }
+            else if (HalfMembersAreStudents())
+            {
+                CurrentUser.Confirmed = true;
+            }
         }
     }
 }

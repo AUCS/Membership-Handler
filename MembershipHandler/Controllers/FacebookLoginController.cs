@@ -79,8 +79,8 @@ namespace MembershipHandler.Controllers
                 .Select(new List<string> { "StudentId" });
             List<string> results = table.ExecuteQuery(query).Select(q => q.StudentId).ToList();
 
-            int students = results.Count(q => q != null);
-            int nonStudents = results.Count(q => q == null);
+            int students = results.Count(q => q != null && q != string.Empty);
+            int nonStudents = results.Count(q => q == null || q == string.Empty);
             if (students > nonStudents)
             {
                 return true;

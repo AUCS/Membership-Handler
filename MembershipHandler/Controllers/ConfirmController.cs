@@ -54,14 +54,14 @@ namespace MembershipHandler.Controllers
                 member.EmailAddress = confirm.Value;
                 tableOperation = TableOperation.Replace(member);
                 memberTable.Execute(tableOperation);
-                result = "Thanks, " + member.EmailAddress + " has been confirmed as your email address.";
+                result = "Thanks" + member.Name + ", " + member.EmailAddress + " has been confirmed as your email address.";
             }
             else if (confirm.PartitionKey == "StudentId")
             {
                 member.StudentId = confirm.Value;
                 tableOperation = TableOperation.Replace(member);
                 memberTable.Execute(tableOperation);
-                result = "Thanks, " + member.StudentId + " has been confirmed as student id number.";
+                result = "Thanks" + member.Name + ", " + member.StudentId + " has been confirmed as your student id number.";
             }
 
             tableOperation = TableOperation.Delete(confirm);
