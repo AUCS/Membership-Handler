@@ -28,8 +28,8 @@ namespace MembershipHandler.Controllers
                 confirm.Value = edits.Email;
                 
                 CloudTable table = TableClient.GetTableReference("Confirms");
-                table.CreateIfNotExists();
-                TableOperation tableOperation = TableOperation.Insert(confirm);
+                table.CreateIfNotExists(); // insert or replace as the user can only have one email confirm
+                TableOperation tableOperation = TableOperation.InsertOrReplace(confirm);
                 table.Execute(tableOperation);
                 Emails.EmailHandler.SendEmailConfirm(CurrentUser, confirm);
 
@@ -47,8 +47,8 @@ namespace MembershipHandler.Controllers
                 confirm.Value = edits.StudentId;
 
                 CloudTable table = TableClient.GetTableReference("Confirms");
-                table.CreateIfNotExists();
-                TableOperation tableOperation = TableOperation.Insert(confirm);
+                table.CreateIfNotExists();  // insert or replace as the user can only have one student id confirm
+                TableOperation tableOperation = TableOperation.InsertOrReplace(confirm);
                 table.Execute(tableOperation);
                 Emails.EmailHandler.SendStudentConfirm(CurrentUser, confirm);
 
