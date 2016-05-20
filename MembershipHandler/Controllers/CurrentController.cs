@@ -65,13 +65,13 @@ namespace MembershipHandler.Controllers
         [NonAction]
         private void ConfirmUserIfStudentOrOverHalf()
         {
-            if (CurrentUser.StudentId != null && CurrentUser.StudentId != string.Empty)
+            if ((CurrentUser.StudentId != null && CurrentUser.StudentId != string.Empty)
+                || HalfMembersAreStudents())
             {
                 CurrentUser.Confirmed = true;
-            }
-            else if (HalfMembersAreStudents())
-            {
-                CurrentUser.Confirmed = true;
+                CloudTable memberTable = TableClient.GetTableReference("Members");
+                TableOperation tableOperation = TableOperation.Replace(CurrentUser);
+                memberTable.Execute(tableOperation);
             }
         }
     }
