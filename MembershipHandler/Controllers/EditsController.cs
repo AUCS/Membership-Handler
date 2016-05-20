@@ -24,9 +24,11 @@ namespace MembershipHandler.Controllers
                 }
 
                 Confirm confirm = new Confirm("Email");
+                confirm.RowKey = CurrentUser.RowKey;
                 confirm.Value = edits.Email;
                 
                 CloudTable table = TableClient.GetTableReference("Confirms");
+                table.CreateIfNotExists();
                 TableOperation tableOperation = TableOperation.Insert(confirm);
                 Emails.EmailHandler.SendEmailConfirm(CurrentUser, confirm);
 
@@ -40,9 +42,11 @@ namespace MembershipHandler.Controllers
                 }
 
                 Confirm confirm = new Confirm("StudentId");
+                confirm.RowKey = CurrentUser.RowKey;
                 confirm.Value = edits.StudentId;
 
                 CloudTable table = TableClient.GetTableReference("Confirms");
+                table.CreateIfNotExists();
                 TableOperation tableOperation = TableOperation.Insert(confirm);
                 Emails.EmailHandler.SendStudentConfirm(CurrentUser, confirm);
 
@@ -52,7 +56,7 @@ namespace MembershipHandler.Controllers
                 }
                 result += edits.StudentId + "@student.adelaide.edu.au";
             }
-            return "We have sent an email to " + result + "to confirm";
+            return "We have sent an email to " + result + " to confirm";
         }
     }
 }
