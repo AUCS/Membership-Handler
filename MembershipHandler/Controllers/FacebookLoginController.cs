@@ -51,24 +51,21 @@ namespace MembershipHandler.Controllers
                 string token = controllerContext.Request.Headers.GetValues("Token").FirstOrDefault();
                 if (token != null && token != string.Empty)
                 {
-                    try
+                    FacebookClient userClient = new FacebookClient(token);
+                    dynamic user = userClient.Get("me");
+                    if (user != null && user.id != null && user.id != string.Empty)
                     {
-                        FacebookClient userClient = new FacebookClient(token);
-                        dynamic user = userClient.Get("me");
-                        if (user != null && user.id != null && user.id != string.Empty)
-                        {
-                            UserFBId = (string)user.id;
-                            CurrentUser = GetMember((string)user.id);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        return Task.FromResult(Request.CreateErrorResponse(HttpStatusCode.BadRequest, e));
+                        UserFBId = (string)user.id;
+                        CurrentUser = GetMember((string)user.id);
+                        return base.ExecuteAsync(controllerContext, cancellationToken);
                     }
                 }
             }
-
-            return base.ExecuteAsync(controllerContext, cancellationToken);
+            else if (controllerContext.Request.RequestUri.AbsolutePath == "/api/Login")
+            {
+                return base.ExecuteAsync(controllerContext, cancellationToken);
+            }
+            return Task.FromResult(Request.CreateResponse(HttpStatusCode.BadRequest));
         }
 
         [NonAction]

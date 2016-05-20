@@ -180,6 +180,7 @@
   <ItemGroup>
     <Compile Include="Controllers\ConfirmController.cs" />
     <Compile Include="Controllers\CurrentController.cs" />
+    <Compile Include="Controllers\EditsController.cs" />
     <Compile Include="Controllers\FacebookLoginController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Emails\EmailHandler.cs" />
@@ -194,6 +195,7 @@
     <Compile Include="Models\Confirm.cs" />
     <Compile Include="Views\Current.cs" />
     <Compile Include="Models\Member.cs" />
+    <Compile Include="Views\Edits.cs" />
     <Compile Include="Views\Register.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -202,12 +204,12 @@
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Web.Debug.config">
+    <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
+    </None>
+    <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
-    </Content>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

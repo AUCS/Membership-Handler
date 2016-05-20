@@ -49,7 +49,7 @@ namespace MembershipHandler.Controllers
             newMember.Name = fbuser.name;
 
             CloudTable table = TableClient.GetTableReference("Members");
-            TableOperation tableOperation = TableOperation.InsertOrReplace(newMember);
+            TableOperation tableOperation = TableOperation.Insert(newMember);
             table.Execute(tableOperation);
         }
 

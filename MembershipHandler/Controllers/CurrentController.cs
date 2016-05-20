@@ -13,7 +13,7 @@ namespace MembershipHandler.Controllers
     public class CurrentController : FacebookLoginController
     {
         [HttpPost]
-        public Current Get()
+        public Current Post()
         {
             Current response = new Current();
 
