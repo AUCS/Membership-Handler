@@ -49,7 +49,7 @@ namespace MembershipHandler.Controllers
             TableOperation tableOperation;
             string result = "Error: This one's a doozy to do with code confirmation.";
 
-            if (confirm.PartitionKey == "EmailAddress")
+            if (confirm.PartitionKey == "Email")
             {
                 member.EmailAddress = confirm.Value;
                 tableOperation = TableOperation.Replace(member);
