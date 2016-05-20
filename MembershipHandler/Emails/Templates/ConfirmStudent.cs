@@ -12,21 +12,19 @@ namespace MembershipHandler.Emails.Templates
 
 Hi <name>!
 
+You have specified your student id to be: <studentid>.
 
-
-You indicated that your Student Id is: <studentid>
-
-
-To confirm this please click here: http://aucs.club/link.html?type=StudentConfirm&id=<linkid>
-
-
-
-If you didn't sign up for the AUCS and believe you have recieved this email by mistake you don't have to do anything, we will remove your address from our system in 48 hours.
-
+Please confirm this as your student id by clicking here: http://aucs.club/link.html?type=Confirm&id=<link>
 
 Thanks,
 
 The AUCS Team
+
+
+
+Not <name>? Someone else has entered your student id - Don't worry - Ignore the link above and we'll remove you from our system in 48 hours.
+
+
 
             ";
     }

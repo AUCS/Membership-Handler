@@ -20,7 +20,8 @@ namespace MembershipHandler.Emails
             myMessage.Subject = "Welcome to the AUCS!";
             myMessage.Text = Templates.ConfirmEmail.Text;
             myMessage.Text = myMessage.Text.Replace("<name>", member.Name);
-            myMessage.Text = myMessage.Text.Replace("<emailid>", confirm.Code);
+            myMessage.Text = myMessage.Text.Replace("<email>", confirm.Value);
+            myMessage.Text = myMessage.Text.Replace("<link>", confirm.Code);
 
             var transportWeb = new Web(CloudConfigurationManager.GetSetting("SendGridAPIKey"));
             transportWeb.DeliverAsync(myMessage);
@@ -36,7 +37,7 @@ namespace MembershipHandler.Emails
             myMessage.Text = Templates.ConfirmStudent.Text;
             myMessage.Text = myMessage.Text.Replace("<name>", member.Name);
             myMessage.Text = myMessage.Text.Replace("<studentid>", confirm.Value);
-            myMessage.Text = myMessage.Text.Replace("<linkid>", confirm.Code);
+            myMessage.Text = myMessage.Text.Replace("<link>", confirm.Code);
 
             var transportWeb = new Web(CloudConfigurationManager.GetSetting("SendGridAPIKey"));
             transportWeb.DeliverAsync(myMessage);
