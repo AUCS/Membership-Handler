@@ -43,7 +43,7 @@ namespace MembershipHandler.Controllers
             memberTable.CreateIfNotExists();
 
             TableQuery<Member> query = new TableQuery<Member>()
-                .Where(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, id));
+                .Where(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, confirm.RowKey));
             Member member = memberTable.ExecuteQuery(query).FirstOrDefault();
 
             TableOperation tableOperation;

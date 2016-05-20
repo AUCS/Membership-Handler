@@ -58,7 +58,7 @@ namespace MembershipHandler.Controllers
                 }
                 result += edits.StudentId + "@student.adelaide.edu.au";
             }
-            return "We have sent an email to " + result + " to confirm";
+            return "We have sent an email to " + result + " to confirm. Remember to check your spam/junk folders.";
         }
     }
 }
