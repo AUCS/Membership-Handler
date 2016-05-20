@@ -30,6 +30,7 @@ namespace MembershipHandler.Controllers
                 CloudTable table = TableClient.GetTableReference("Confirms");
                 table.CreateIfNotExists();
                 TableOperation tableOperation = TableOperation.Insert(confirm);
+                table.Execute(tableOperation);
                 Emails.EmailHandler.SendEmailConfirm(CurrentUser, confirm);
 
                 result = edits.Email;
@@ -48,6 +49,7 @@ namespace MembershipHandler.Controllers
                 CloudTable table = TableClient.GetTableReference("Confirms");
                 table.CreateIfNotExists();
                 TableOperation tableOperation = TableOperation.Insert(confirm);
+                table.Execute(tableOperation);
                 Emails.EmailHandler.SendStudentConfirm(CurrentUser, confirm);
 
                 if (result != null)
