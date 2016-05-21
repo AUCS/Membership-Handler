@@ -23,6 +23,7 @@ namespace MembershipHandler.Controllers
                     return edits.Email + " is an invalid email address.";
                 }
 
+                edits.Email = edits.Email.ToLowerInvariant();
                 Confirm confirm = new Confirm("Email");
                 confirm.RowKey = CurrentUser.RowKey;
                 confirm.Value = edits.Email;
@@ -42,6 +43,7 @@ namespace MembershipHandler.Controllers
                     return edits.StudentId + " is an invalid student id.";
                 }
 
+                edits.StudentId = edits.StudentId.ToLowerInvariant();
                 Confirm confirm = new Confirm("StudentId");
                 confirm.RowKey = CurrentUser.RowKey;
                 confirm.Value = edits.StudentId;
