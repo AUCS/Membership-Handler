@@ -45,9 +45,9 @@ namespace MembershipHandler.Controllers
             if (CurrentUser.Committee)
             {
                 CloudTable committeeTable = TableClient.GetTableReference("Committee");
-                TableQuery<Committee> query = new TableQuery<Committee>()
-                    .Where(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, CurrentUser.RowKey));
-                Committee committee = committeeTable.ExecuteQuery(query).FirstOrDefault();
+                committeeTable.CreateIfNotExists();
+                TableOperation retrieveOperation = TableOperation.Retrieve<Committee>("Committee", CurrentUser.RowKey);                
+                Committee committee = (Committee)committeeTable.Execute(retrieveOperation).Result;
 
                 if (committee != null)
                 {

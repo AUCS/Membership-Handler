@@ -41,12 +41,9 @@ namespace MembershipHandler.Controllers
 
             CloudTable memberTable = TableClient.GetTableReference("Members");
             memberTable.CreateIfNotExists();
-
-            TableQuery<Member> query = new TableQuery<Member>()
-                .Where(TableQuery.GenerateFilterCondition("RowKey", QueryComparisons.Equal, confirm.RowKey));
-            Member member = memberTable.ExecuteQuery(query).FirstOrDefault();
-
-            TableOperation tableOperation;
+            TableOperation tableOperation = TableOperation.Retrieve<Member>("Member", confirm.RowKey);
+            Member member = (Member)memberTable.Execute(tableOperation).Result;
+            
             string result = "Error: This one's a doozy to do with code confirmation.";
 
             if (confirm.PartitionKey == "Email")
