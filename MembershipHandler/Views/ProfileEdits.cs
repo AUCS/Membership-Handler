@@ -6,7 +6,7 @@ using System.Web;
 
 namespace MembershipHandler.Views
 {
-    public class Edits
+    public class ProfileEdits
     {
         [EmailAddress]
         public string Email { get; set; }

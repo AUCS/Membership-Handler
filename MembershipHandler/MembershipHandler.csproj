@@ -196,7 +196,7 @@
     <Compile Include="Models\Confirm.cs" />
     <Compile Include="Views\Profile.cs" />
     <Compile Include="Models\Member.cs" />
-    <Compile Include="Views\Edits.cs" />
+    <Compile Include="Views\ProfileEdits.cs" />
     <Compile Include="Views\Register.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

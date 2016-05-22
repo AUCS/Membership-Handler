@@ -13,7 +13,7 @@ namespace MembershipHandler.Controllers
     public class ProfileEditsController : FacebookLoginController
     {
         [HttpPost]
-        public string Post(Edits edits)
+        public string Post(ProfileEdits edits)
         {
             string result = null;
             if (edits.Email != null)
