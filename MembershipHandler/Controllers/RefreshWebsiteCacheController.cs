@@ -27,6 +27,7 @@ namespace MembershipHandler.Controllers
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
             ServiceProperties blobServiceProperties = new ServiceProperties();
+            blobServiceProperties.Cors = new CorsProperties();
             blobServiceProperties.Cors.CorsRules.Add(new CorsRule()
             {
                 AllowedHeaders = new List<string>() { "*" },
