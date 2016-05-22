@@ -30,6 +30,12 @@ namespace MembershipHandler.Controllers
         
         public override Task<HttpResponseMessage> ExecuteAsync(HttpControllerContext controllerContext, CancellationToken cancellationToken)
         {
+            if (!controllerContext.Request.Headers.Contains("Token")
+                && controllerContext.Request.RequestUri.AbsolutePath != "/api/Login")
+            {
+                return Task.FromResult(Request.CreateResponse(HttpStatusCode.BadRequest));
+            }
+
             // Retrieve the storage account from the connection string.
             storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("StorageConnectionString"));
             // Create the table client.
@@ -60,12 +66,13 @@ namespace MembershipHandler.Controllers
                         return base.ExecuteAsync(controllerContext, cancellationToken);
                     }
                 }
+                return Task.FromResult(Request.CreateResponse(HttpStatusCode.BadRequest));
             }
-            else if (controllerContext.Request.RequestUri.AbsolutePath == "/api/Login")
+            else
             {
+                // only works for api/Login due to first if statement in this function
                 return base.ExecuteAsync(controllerContext, cancellationToken);
             }
-            return Task.FromResult(Request.CreateResponse(HttpStatusCode.BadRequest));
         }
 
         [NonAction]
