@@ -3,6 +3,7 @@ using MembershipHandler.Views;
 using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Shared.Protocol;
 using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,19 @@ namespace MembershipHandler.Controllers
             }
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("StorageConnectionString"));
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            ServiceProperties blobServiceProperties = new ServiceProperties();
+            blobServiceProperties.Cors.CorsRules.Add(new CorsRule()
+            {
+                AllowedHeaders = new List<string>() { "*" },
+                ExposedHeaders = new List<string>() { "*" },
+                AllowedMethods = CorsHttpMethods.Post | CorsHttpMethods.Get,
+                AllowedOrigins = new List<string>() { "http://aucs.club", "http://storage.aucs.club" },
+                MaxAgeInSeconds = 3600,
+            });
+            blobClient.SetServiceProperties(blobServiceProperties);
+
+
             CloudBlobContainer cacheContainer = blobClient.GetContainerReference("website-cache");
             cacheContainer.CreateIfNotExists();
 
