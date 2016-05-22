@@ -15,8 +15,8 @@ namespace MembershipHandler.Controllers
 {
     public class RefreshWebsiteCacheController : BaseFacebookController
     {
-        [HttpPost]
-        public string Post()
+        [HttpGet]
+        public string Get()
         {
             if (!CurrentUser.Committee)
             {
