@@ -10,16 +10,16 @@ using System.Web.Http;
 
 namespace MembershipHandler.Controllers
 {
-    public class CurrentController : FacebookLoginController
+    public class ProfileController : FacebookLoginController
     {
         [HttpPost]
-        public Current Post()
+        public Profile Post()
         {
             if (!CurrentUser.Confirmed)
             {
                 ConfirmUserIfStudentOrOverHalf();
             }
-            Current response = new Current();
+            Profile response = new Profile();
 
             response.Name = CurrentUser.Name;            
             response.StudentId = CurrentUser.StudentId;

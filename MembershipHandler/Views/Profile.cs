@@ -5,7 +5,7 @@ using System.Web;
 
 namespace MembershipHandler.Views
 {
-    public class Current
+    public class Profile
     {
         public string Name { get; set; }
         public string StudentId { get; set; }
