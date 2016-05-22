@@ -33,7 +33,7 @@ namespace MembershipHandler.Controllers
             if (!controllerContext.Request.Headers.Contains("Token")
                 && controllerContext.Request.RequestUri.AbsolutePath != "/api/Login")
             {
-                return Task.FromResult(Request.CreateResponse(HttpStatusCode.BadRequest));
+                return Task.FromResult(controllerContext.Request.CreateResponse(HttpStatusCode.BadRequest));
             }
 
             // Retrieve the storage account from the connection string.
@@ -66,7 +66,7 @@ namespace MembershipHandler.Controllers
                         return base.ExecuteAsync(controllerContext, cancellationToken);
                     }
                 }
-                return Task.FromResult(Request.CreateResponse(HttpStatusCode.BadRequest));
+                return Task.FromResult(controllerContext.Request.CreateResponse(HttpStatusCode.BadRequest));
             }
             else
             {
