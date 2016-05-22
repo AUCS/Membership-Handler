@@ -10,7 +10,7 @@ using System.Web.Http;
 
 namespace MembershipHandler.Controllers
 {
-    public class EditsController : FacebookLoginController
+    public class ProfileEditsController : FacebookLoginController
     {
         [HttpPost]
         public string Post(Edits edits)
