@@ -18,7 +18,7 @@ using MembershipHandler.Filters;
 
 namespace MembershipHandler.Controllers
 {
-    public class FacebookLoginController : ApiController
+    public class BaseFacebookController : ApiController
     {
         private CloudStorageAccount storageAccount;
         protected CloudTableClient TableClient;
@@ -89,7 +89,7 @@ namespace MembershipHandler.Controllers
         }
         
         [NonAction]
-        protected Member GetMember(string id)
+        public Member GetMember(string id)
         {
             CloudTable table = TableClient.GetTableReference("Members");
             table.CreateIfNotExists();

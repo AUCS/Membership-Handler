@@ -12,7 +12,7 @@ using System.Web.Http;
 
 namespace MembershipHandler.Controllers
 {
-    public class LoginController : FacebookLoginController
+    public class LoginController : BaseFacebookController
     {
         [HttpPost]
         public string Post()
