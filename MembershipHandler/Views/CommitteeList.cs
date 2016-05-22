@@ -7,12 +7,18 @@ namespace MembershipHandler.Views
 {
     public class CommitteeList
     {
-        public List<Tuple<string, string>> Members { get; set; }
+        public List<CommitteeSingle> Members { get; set; }
 
         public CommitteeList()
         {
-            Members = new List<Tuple<string, string>>();
+            Members = new List<CommitteeSingle>();
         }
+    }
+
+    public class CommitteeSingle
+    {
+        public string Title { get; set; }
+        public string Name { get; set; }
     }
 
     public static class CommitteeListHelpers
@@ -23,7 +29,7 @@ namespace MembershipHandler.Views
             for (int i = 0; i < committee.Count; i++)
             {
                 Models.Member member = controller.GetMember(committee[i].RowKey);
-                results.Members.Add(new Tuple<string, string>(member.Name, committee[i].Title));
+                results.Members.Add(new CommitteeSingle() { Name = member.Name, Title = committee[i].Title });
             }
             return results;
         }
