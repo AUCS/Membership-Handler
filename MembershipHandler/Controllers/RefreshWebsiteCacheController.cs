@@ -24,7 +24,7 @@ namespace MembershipHandler.Controllers
             }
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("StorageConnectionString"));
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-            CloudBlobContainer cacheContainer = blobClient.GetContainerReference("WebsiteCache");
+            CloudBlobContainer cacheContainer = blobClient.GetContainerReference("website-cache");
             cacheContainer.CreateIfNotExists();
 
             RefreshCommitteeList(cacheContainer);
